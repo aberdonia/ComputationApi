@@ -24,12 +24,12 @@ q.roughness = 0.002;
 q.cores = 1;
 
 const c = new Computation([p, q]);
-console.log(c);
 c.compute();
 
 console.log(c);
 
-res.send(c.pipe_length);
+res.setHeader("Content-Type", "application/json");
+res.send({ a: c.pipe_length });
 
 
 
