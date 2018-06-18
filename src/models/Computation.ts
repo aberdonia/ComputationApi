@@ -24,8 +24,8 @@ export class Computation {
     pressure_drop_static: Array<number> = [];
     pressure_drop_overall: Array<number> = [];
 
-    distance_x: Array<number> = [];
-    displacement_y: Array<number> = [];
+    distance_x: Array<number> = [0];
+    displacement_y: Array<number> = [0];
 
     // chart keys
     geometry: Array<ChartArrayObject> = [];

@@ -29,7 +29,7 @@ c.compute();
 console.log(c);
 
 res.setHeader("Content-Type", "application/json");
-res.send({ a: c.pipe_length });
+res.send(c.geometry);
 
 
 
