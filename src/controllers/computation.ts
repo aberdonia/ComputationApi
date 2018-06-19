@@ -1,29 +1,19 @@
 import { Computation } from "../models/Computation";
-import { Pipe } from "../models/Pipe";
+import { Pipe, pipes } from "../models/Pipe";
 import app from "../app";
 import { Request, Response } from "express";
 
 
 export let compute = (req: Request, res: Response) => {
     console.log("hello");
-    const p = new Pipe;
 
-    p.description = "string";
-p.horizontal_change = 300;
-p.vertical_change = 250;
-p.inner_diamter = 6;
-p.roughness = 0.0015;
-p.cores = 1;
+const pipe_array: Array<Pipe> = [];
+for (let i = 0; i < pipes.length; i++) {
+    pipe_array.push(new Pipe(i));
+}
+console.log(pipe_array);
 
-const q = new Pipe;
-q.description = "string";
-q.horizontal_change = 100;
-q.vertical_change = 200;
-q.inner_diamter = 5;
-q.roughness = 0.002;
-q.cores = 1;
-
-const c = new Computation([p, q]);
+const c = new Computation(pipe_array);
 c.compute();
 
 console.log(c);
