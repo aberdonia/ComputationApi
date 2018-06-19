@@ -9,6 +9,7 @@ import { Inputs } from "../models/Inputs";
 
 export class Computation {
     pipes: Array<Pipe>;
+    inputs: Inputs;
     pipe_length: Array<number> = [];
     cumulative_length: Array<number> = [];
     mean_diameter: Array<number> = [];
@@ -31,39 +32,39 @@ export class Computation {
     pressure_profile: Array<ChartArrayObject> = [];
 
 
-    constructor(public calculationInput: Array<Pipe>) {
-        this.pipes = calculationInput;
+    constructor(pipes_array: Array<Pipe>, inputs: Inputs) {
+        this.pipes = pipes_array;
+        this.inputs = inputs;
     }
 
     compute() {
-        const inputs = new Inputs();
         for (let i = 0; i < this.pipes.length; i++) {
             this.pipe_length.push(Math.sqrt(Math.pow(this.pipes[i].horizontal_change, 2) + Math.pow(this.pipes[i].vertical_change, 2)));
-            this.mean_diameter.push(this.pipes[i].inner_diamter * Math.pow(1 + (inputs.volumetric_expansion / 100), 0.5));
-            console.log(inputs, this.pipes[i].inner_diamter);
+            this.mean_diameter.push(this.pipes[i].inner_diamter * Math.pow(1 + (this.inputs.volumetric_expansion / 100), 0.5));
+            console.log(this.inputs, this.pipes[i].inner_diamter);
             this.nonDimensional_Roughness.push(this.pipes[i].roughness / this.mean_diameter[i]);
-            this.fluid_rate.push(inputs.required_flowrate / 3600 / this.pipes[i].cores);
+            this.fluid_rate.push(this.inputs.required_flowrate / 3600 / this.pipes[i].cores);
             this.fluid_velocity.push(this.fluid_rate[i] / (Math.PI * Math.pow((this.mean_diameter[i] / 1000 / 2), 2)));
-            this.reynolds.push((inputs.density * this.fluid_velocity[i] * this.mean_diameter[i] / 1000) / (inputs.viscosity / 1000));
+            this.reynolds.push((this.inputs.density * this.fluid_velocity[i] * this.mean_diameter[i] / 1000) / (this.inputs.viscosity / 1000));
             console.log(this);
             // switch to chosen fluid model: laminar, transitional, turbulent
             const ff_laminar = 64 / this.reynolds[i];
             const ff_colebrook = this.colebrookFrictionCoefficient(this.nonDimensional_Roughness[i], this.reynolds[i]);
-            if (this.reynolds[i] < inputs.Re_laminar_max) {
+            if (this.reynolds[i] < this.inputs.Re_laminar_max) {
                 this.correlation.push("Laminar");
                 this.friction_factor.push(ff_laminar);
-            } else if (this.reynolds[i] >= inputs.Re_laminar_max && this.reynolds[i] < inputs.Re_transitional_max) {
+            } else if (this.reynolds[i] >= this.inputs.Re_laminar_max && this.reynolds[i] < this.inputs.Re_transitional_max) {
                 this.correlation.push("Transitional");
 
-                const ff_transitional = (this.reynolds[i] - inputs.Re_laminar_max) * (ff_colebrook - ff_laminar) / (inputs.Re_transitional_max - inputs.Re_laminar_max) + ff_laminar;
+                const ff_transitional = (this.reynolds[i] - this.inputs.Re_laminar_max) * (ff_colebrook - ff_laminar) / (this.inputs.Re_transitional_max - this.inputs.Re_laminar_max) + ff_laminar;
                 this.friction_factor.push(ff_transitional);
             } else {
                 this.correlation.push("Turbulent");
                 this.friction_factor.push(ff_colebrook);
             }
 
-            this.pressure_drop_friction.push(this.friction_factor[i] * this.pipe_length[i] / (this.mean_diameter[i] / 1000) * inputs.density * Math.pow(this.fluid_velocity[i], 2) / 2 * 0.00001);
-            this.pressure_drop_static.push(inputs.density * 9.81 * this.pipes[i].vertical_change / 100000);
+            this.pressure_drop_friction.push(this.friction_factor[i] * this.pipe_length[i] / (this.mean_diameter[i] / 1000) * this.inputs.density * Math.pow(this.fluid_velocity[i], 2) / 2 * 0.00001);
+            this.pressure_drop_static.push(this.inputs.density * 9.81 * this.pipes[i].vertical_change / 100000);
             this.pressure_drop_overall.push(this.pressure_drop_friction[i] - this.pressure_drop_static[i]);
 
 
@@ -98,8 +99,8 @@ export class Computation {
 
             if (i === 0) {
                 pressureProfileObj.x = 0;
-                pressureProfileObj.y = inputs.outlet_pressure + total_pressure_drop;
-                previousPressure = inputs.outlet_pressure + total_pressure_drop;
+                pressureProfileObj.y = this.inputs.outlet_pressure + total_pressure_drop;
+                previousPressure = this.inputs.outlet_pressure + total_pressure_drop;
             } else {
                 pressureProfileObj.x = this.cumulative_length[i - 1];
                 pressureProfileObj.y = previousPressure - this.pressure_drop_overall[i - 1];

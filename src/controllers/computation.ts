@@ -2,6 +2,7 @@ import { Computation } from "../models/Computation";
 import { Pipe } from "../models/Pipe";
 import app from "../app";
 import { Request, Response } from "express";
+import { Inputs } from "../models/Inputs";
 
 
 export let compute = (req: Request, res: Response) => {
@@ -9,6 +10,7 @@ export let compute = (req: Request, res: Response) => {
     // build pipe array
     console.log(req.body);
     const pipe_array: Array<Pipe> = req.body.pipes;
+    const inputs: Inputs = req.body.inputs;
     // const pipe_array: Array<Pipe> = [];
     // for (let i = 0; i < pipes.length; i++) {
     //     pipe_array.push(new Pipe(i));
@@ -16,7 +18,7 @@ export let compute = (req: Request, res: Response) => {
     console.log(pipe_array);
 
     // creat computation client and fit to pipe array
-    const c = new Computation(pipe_array);
+    const c = new Computation(pipe_array, inputs);
     // perform computation on pipe array
     c.compute();
 
