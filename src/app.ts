@@ -29,16 +29,24 @@ app.use((req, res, next) => {
   res.locals.user = req.user;
   next();
 });
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+// enable cross-origin read blocking
+// app.use(cors());
+
+
 
 /**
  * Primary app routes.
  */
 app.get("/", homeController.index);
 
-app.get("/test", computationController.displaySomething);
-app.post("/test", computationController.testPost);
-
 app.post("/computation", computationController.compute);
 
+app.post("/test", computationController.testPost);
 
 export default app;
