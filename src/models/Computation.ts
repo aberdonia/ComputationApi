@@ -9,8 +9,7 @@ import { Inputs } from "../models/Inputs";
 
 export class Computation {
     pipes: Array<Pipe>;
-
-    public pipe_length: Array<number> = [];
+    pipe_length: Array<number> = [];
     cumulative_length: Array<number> = [];
     mean_diameter: Array<number> = [];
     nonDimensional_Roughness: Array<number> = [];
@@ -109,8 +108,10 @@ export class Computation {
             this.pressure_profile.push(pressureProfileObj);
         }
 
-        const chartData = new ChartData(this.pressure_profile, this.geometry);
+    }
 
+    getChartData() {
+        return new ChartData(this.pressure_profile, this.geometry);
     }
 
     colebrookFrictionCoefficient(nonDimensional_Roughness: number, reynolds: number) {

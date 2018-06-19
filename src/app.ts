@@ -12,7 +12,6 @@ dotenv.config({ path: ".env.example" });
 
 // Controllers (route handlers)
 import * as homeController from "./controllers/home";
-import * as contactController from "./controllers/contact";
 import * as computationController from "./controllers/computation";
 
 // Create Express server
@@ -31,19 +30,15 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(
-  express.static(path.join(__dirname, "public"), { maxAge: 31557600000 })
-);
-
 /**
  * Primary app routes.
  */
 app.get("/", homeController.index);
-app.get("/contact", contactController.getContact);
 
 app.get("/test", computationController.displaySomething);
+app.post("/test", computationController.testPost);
 
-app.get("/computation", computationController.compute);
+app.post("/computation", computationController.compute);
 
 
 export default app;
